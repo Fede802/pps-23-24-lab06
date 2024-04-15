@@ -61,7 +61,7 @@ enum List[A]:
   def span(predicate: A => Boolean): (List[A], List[A]) =
     foldLeft((Nil(), Nil()))((a, l) => if a._2.head.isEmpty && predicate(l) then (a._1.append(l :: Nil()), a._2) else (a._1, a._2.append(l :: Nil())))
 
-  def takeRight(n: Int): List[A] = foldRight((Nil[A](), 0))((l, a) => if a._2 < n then (l :: a._1, a._2 + 1) else a)._1
+  def takeRight(n: Int): List[A] = foldRight(Nil())((l, a) => if a.length() < n then l :: a else a)
 
   def collect(predicate: PartialFunction[A, A]): List[A] = foldRight(Nil())((l, a) => if predicate.isDefinedAt(l) then predicate(l) :: a else a)
 
