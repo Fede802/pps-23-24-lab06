@@ -1,5 +1,7 @@
 package ex1
 
+
+
 // List as a pure interface
 enum List[A]:
   case ::(h: A, t: List[A])
@@ -44,14 +46,22 @@ enum List[A]:
     case Nil() => throw new IllegalStateException()
     case h :: t => t.foldLeft(h)(op)
 
+  //  def span(predicate: A => Boolean): (List[A], List[A]) = (
+  //    foldLeft((Nil[A](),true))((a,l) => if predicate(l) && a._2 then (l :: a._1, false) else a)._1,
+  //    foldLeft((Nil[A](),false))((a,l) => if predicate(l) && !a._2 then a else (l :: a._1, true))._1
+  //  )
+
   // Exercise: implement the following methods
-  def zipWithValue[B](value: B): List[(A, B)] = ???
-  def length(): Int = ???
-  def zipWithIndex: List[(A, Int)] = ???
-  def partition(predicate: A => Boolean): (List[A], List[A]) = ???
-  def span(predicate: A => Boolean): (List[A], List[A]) = ???
-  def takeRight(n: Int): List[A] = ???
-  def collect(predicate: PartialFunction[A, A]): List[A] = ???
+  def zipWithValue[B](value: B): List[(A, B)] = map((_,value))
+  def length(): Int = foldLeft(0)((a, _) => a + 1)
+  def zipWithIndex: List[(A, Int)] = foldRight(Nil())((l,a) => (l, length() - a.length() - 1) :: a)
+  def partition(predicate: A => Boolean): (List[A], List[A]) = (filter(predicate), filter(!predicate(_)))
+  def findFirst(predicate: A => Boolean): Option[A] = filter(predicate).head
+  def span(predicate: A => Boolean): (List[A], List[A]) =
+    foldLeft((Nil(),Nil()))((a,l) => if a._2.head.isEmpty && predicate(l) then (a._1.append(l::Nil()), a._2) else (a._1, a._2.append(l::Nil())))
+  def takeRight(n: Int): List[A] = foldRight((Nil[A](),0))((l,a) => if a._2 < n then (l :: a._1, a._2 + 1) else a)._1
+  def collect(predicate: PartialFunction[A, A]): List[A] = foldRight(Nil())((l,a) => if predicate.isDefinedAt(l) then predicate(l) :: a else a)
+
 // Factories
 object List:
 
@@ -67,7 +77,9 @@ object Test extends App:
 
   import List.*
   val reference = List(1, 2, 3, 4)
+  println(reference)
   println(reference.zipWithValue(10)) // List((1, 10), (2, 10), (3, 10), (4, 10))
+  println(reference.length()) // 4
   println(reference.zipWithIndex) // List((1, 0), (2, 1), (3, 2), (4, 3))
   println(reference.partition(_ % 2 == 0)) // (List(2, 4), List(1, 3))
   println(reference.span(_ % 2 != 0)) // (List(1), List(2, 3, 4))
