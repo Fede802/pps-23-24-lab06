@@ -54,7 +54,8 @@ enum List[A]:
 
   def zipWithIndex: List[(A, Int)] = foldRight(Nil())((l, a) => (l, length() - a.length() - 1) :: a)
 
-  def partition(predicate: A => Boolean): (List[A], List[A]) = (filter(predicate), filter(!predicate(_)))
+  def partition(predicate: A => Boolean): (List[A], List[A]) =
+    foldRight((Nil(), Nil()))((l, a) => if predicate(l) then (l :: a._1, a._2) else (a._1, l :: a._2))
 
   def span(predicate: A => Boolean): (List[A], List[A]) =
     foldLeft((Nil(), Nil()))((a, l) => if a._2.head.isEmpty && predicate(l) then (a._1.append(l :: Nil()), a._2) else (a._1, a._2.append(l :: Nil())))
@@ -62,7 +63,6 @@ enum List[A]:
   def takeRight(n: Int): List[A] = foldRight(Nil())((l, a) => if a.length() < n then l :: a else a)
 
   def collect(predicate: PartialFunction[A, A]): List[A] = foldRight(Nil())((l, a) => if predicate.isDefinedAt(l) then predicate(l) :: a else a)
-
 
 // Factories
 object List:
