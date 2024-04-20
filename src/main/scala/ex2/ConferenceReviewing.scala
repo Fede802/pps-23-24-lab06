@@ -20,7 +20,6 @@ object ConferenceReviewing:
   def apply(): ConferenceReviewing = ConferenceReviewingImpl()
   private case class ConferenceReviewingImpl() extends ConferenceReviewing:
     private var articles: List[(Int, Map[Question, Int])] = List()
-
     private def articlesID: List[Int] =
       articles.map(_._1).distinct
     private def averageScore(article: Int, question: Question): Double =
