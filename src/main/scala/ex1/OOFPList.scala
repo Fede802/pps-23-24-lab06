@@ -52,7 +52,7 @@ enum List[A]:
 
   def length(): Int = foldLeft(0)((a, _) => a + 1)
 
-  def zipWithIndex: List[(A, Int)] = foldRight(Nil())((l, a) => (l, length() - a.length() - 1) :: a)
+  def zipWithIndex: List[(A, Int)] = foldRight(Nil[(A, Int)](), length() - 1)((l, a) => ((l, a._2) :: a._1, a._2 - 1))._1
 
   def partition(predicate: A => Boolean): (List[A], List[A]) =
     foldRight((Nil(), Nil()))((l, a) => if predicate(l) then (l :: a._1, a._2) else (a._1, l :: a._2))
@@ -60,13 +60,13 @@ enum List[A]:
   def span(predicate: A => Boolean): (List[A], List[A]) =
     foldLeft((Nil[A](), Nil[A]()))((a, l) => if a._2.head.isEmpty && predicate(l) then (l :: a._1, a._2) else (a._1, l :: a._2)) match
       case (l1,l2) => (l1.reverse(), l2.reverse())
-  //    foldLeft((Nil(), Nil()))((a, l) => if a._2.head.isEmpty && predicate(l) then (a._1.append(l :: Nil()), a._2) else (a._1, a._2.append(l :: Nil())))
 
   def takeRight(n: Int): List[A] = foldRight(Nil())((l, a) => if a.length() < n then l :: a else a)
 
   def collect(predicate: PartialFunction[A, A]): List[A] = foldRight(Nil())((l, a) => if predicate.isDefinedAt(l) then predicate(l) :: a else a)
 
   def reverse(): List[A] = foldLeft(Nil[A]())((a, l) => l :: a)
+
 // Factories
 object List:
 
@@ -77,20 +77,3 @@ object List:
 
   def of[A](elem: A, n: Int): List[A] =
     if n == 0 then Nil() else elem :: of(elem, n - 1)
-
-object Test extends App:
-
-  import List.*
-
-  val reference = List(1, 2, 3, 4)
-  println(reference)
-  println(reference.zipWithValue(10)) // List((1, 10), (2, 10), (3, 10), (4, 10))
-  println(reference.length()) // 4
-  println(reference.zipWithIndex) // List((1, 0), (2, 1), (3, 2), (4, 3))
-  println(reference.partition(_ % 2 == 0)) // (List(2, 4), List(1, 3))
-  println(reference.span(_ % 2 != 0)) // (List(1), List(2, 3, 4))
-  println(reference.span(_ < 3)) // (List(1, 2), List(3, 4))
-  println(reference.reduce(_ + _)) // 10
-  println(List(10).reduce(_ + _)) // 10
-  println(reference.takeRight(3)) // List(2, 3, 4)
-  println(reference.collect { case x if x % 2 == 0 => x + 1 }) // List(3, 5)

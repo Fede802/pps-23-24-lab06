@@ -21,7 +21,7 @@ object ConferenceReviewing:
   private case class ConferenceReviewingImpl() extends ConferenceReviewing:
     private var articles: List[(Int, Map[Question, Int])] = List()
     override def loadReview(article: Int, scores: Map[Question, Int]): Unit =
-      articles ::= (article, scores) //articles = (article, scores) :: articles
+      articles ::= (article, scores)
     override def loadReview(article: Int, relevance: Int, significance: Int, confidence: Int, fin: Int): Unit =
       loadReview(article, Map(RELEVANCE -> relevance, SIGNIFICANCE -> significance, CONFIDENCE -> confidence, FINAL -> fin))
     override def orderedScores(article: Int, question: Question): List[Int] =
