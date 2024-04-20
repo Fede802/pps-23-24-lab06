@@ -1,3 +1,5 @@
+import sbt.Keys.libraryDependencies
+
 val scala3Version = "3.3.1"
 
 lazy val root = project
@@ -9,5 +11,6 @@ lazy val root = project
     scalaVersion := scala3Version,
     javacOptions ++= Seq("-source", "17"),
 
-    libraryDependencies += "com.github.sbt" % "junit-interface" % "0.13.2" % Test
+    libraryDependencies += "com.github.sbt" % "junit-interface" % "0.13.2" % Test,
+    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % "test"
   )
