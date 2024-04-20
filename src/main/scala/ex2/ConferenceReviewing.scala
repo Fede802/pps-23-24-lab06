@@ -21,7 +21,7 @@ object ConferenceReviewing:
   private case class ConferenceReviewingImpl() extends ConferenceReviewing:
     private var articles: List[(Int, Map[Question, Int])] = List()
 
-    private def articlesID: List[Int] = 
+    private def articlesID: List[Int] =
       articles.map(_._1).distinct
     private def averageScore(article: Int, question: Question): Double =
       average(scores(article, question))
@@ -30,17 +30,14 @@ object ConferenceReviewing:
       l.sum.toDouble / l.length
     private def scores(article: Int, question: Question): List[Int] =
       articlesWithID(article).map(_._2(question))
-    private def articlesWithID(article: Int): List[(Int, Map[Question, Int])] = 
+    private def articlesWithID(article: Int): List[(Int, Map[Question, Int])] =
       articles.filter(_._1 == article)
     private def weightedFinalScore(article: Int): List[Double] =
       articlesWithID(article).map((i,q) => q(CONFIDENCE)*q(FINAL)/10.0)
     override def loadReview(article: Int, scores: Map[Question, Int]): Unit =
       articles ::= (article, scores)
     override def loadReview(article: Int, relevance: Int, significance: Int, confidence: Int, fin: Int): Unit =
-      loadReview(
-        article, 
-        Map(RELEVANCE -> relevance, SIGNIFICANCE -> significance, CONFIDENCE -> confidence, FINAL -> fin)
-      )
+      loadReview(article, Map(RELEVANCE -> relevance, SIGNIFICANCE -> significance, CONFIDENCE -> confidence, FINAL -> fin))
     override def orderedScores(article: Int, question: Question): List[Int] =
       scores(article,question).sorted
     override def averageFinalScore(article: Int): Double =
