@@ -33,6 +33,8 @@ object ConferenceReviewing:
       articles.filter(_._1 == article)
     private def weightedFinalScore(article: Int): List[Double] =
       articlesWithID(article).map((i,q) => q(CONFIDENCE)*q(FINAL)/10.0)
+    private def accepted(a: Int): Boolean =
+      averageFinalScore(a) > 5 && scores(a, RELEVANCE).exists(_ >= 8)
     override def loadReview(article: Int, scores: Map[Question, Int]): Unit =
       articles ::= (article, scores)
     override def loadReview(article: Int, relevance: Int, significance: Int, confidence: Int, fin: Int): Unit =
@@ -45,8 +47,6 @@ object ConferenceReviewing:
       articlesID.filter(accepted).toSet
     override def sortedAcceptedArticles(): List[(Int, Double)] =
       articlesID.collect({case a if accepted(a) => (a,averageFinalScore(a))}).sortBy(_._2)
-    private def accepted(a: Int): Boolean =
-      averageFinalScore(a) > 5 && scores(a, RELEVANCE).exists(_ >= 8)
     override def averageWeightedFinalScoreMap(): Map[Int, Double] =
       articlesID.map(a => (a, average(weightedFinalScore(a)))).toMap
 
