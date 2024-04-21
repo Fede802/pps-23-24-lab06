@@ -61,7 +61,7 @@ enum List[A]:
     foldLeft((Nil[A](), Nil[A]()))((a, l) => if a._2.head.isEmpty && predicate(l) then (l :: a._1, a._2) else (a._1, l :: a._2)) match
       case (l1,l2) => (l1.reverse(), l2.reverse())
 
-  def takeRight(n: Int): List[A] = foldRight(Nil())((l, a) => if a.length() < n then l :: a else a)
+  def takeRight(n: Int): List[A] = foldRight(Nil[A](), 0)((l, a) => if a._2 < n then (l :: a._1, a._2 + 1) else a)._1
 
   def collect(predicate: PartialFunction[A, A]): List[A] = foldRight(Nil())((l, a) => if predicate.isDefinedAt(l) then predicate(l) :: a else a)
 
